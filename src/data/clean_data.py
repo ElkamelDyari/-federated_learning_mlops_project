@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
-from sklearn.model_selection import StratifiedShuffleSplit
 import warnings
 
 warnings.filterwarnings("ignore")
@@ -84,7 +83,6 @@ def drop_unnecessary_features(data):
     return data
 
 
-
 def split_data(data, n_splits=25, random_state=0):
     """Splits data into equal-sized batches.
 
@@ -97,21 +95,12 @@ def split_data(data, n_splits=25, random_state=0):
         A list of batches, each containing an equal number of samples from the data.
       """
     # Shuffle the data to ensure randomness
-    np.random.seed(random_state)
-    np.random.shuffle(data)
+    data = data.sample(frac=1, random_state=random_state).reset_index(drop=True)
 
     # Calculate the batch size
     batch_size = len(data) // n_splits
 
-    # Split the data into batches
-    batches = []
-    for i in range(n_splits):
-        start_idx = i * batch_size
-        end_idx = (i + 1) * batch_size
-        batch = data[start_idx:end_idx]
-        batches.append(batch)
-
-    return batches
+    return [data.iloc[i * batch_size: (i + 1) * batch_size] for i in range(n_splits)]
 
 
 def save_batches(batches, output_dir):
@@ -121,21 +110,25 @@ def save_batches(batches, output_dir):
         batch.to_csv(file_path, index=False)
 
 
+def clean_split_save(file_path="../../data/raw/MachineLearningCVE/MachineLearningCVE.csv",
+                     output_dir="../../data/processed"):
+    """Clean then Split then save the Data """
 
+    # Load and preprocess the data
+    file_path = file_path
+    data = load_data(file_path)
+    data = clean_missing_values(data)
+    data = map_attack_types(data)
+    data = encode_attack_types(data)
+    data = optimize_memory_usage(data)
+    data = drop_unnecessary_features(data)
 
-# Load and preprocess the data
-file_path = "../../data/raw/MachineLearningCVE/MachineLearningCVE.csv"
-data = load_data(file_path)
-data = clean_missing_values(data)
-data = map_attack_types(data)
-data = encode_attack_types(data)
-data = optimize_memory_usage(data)
-data = drop_unnecessary_features(data)
+    # split the data
+    batches = split_data(data)
 
-# split the data
-batches = split_data(data)
+    # Save processed batches
+    output_dir = output_dir
+    save_batches(batches, output_dir)
+    print("Data processing complete!")
 
-# Save processed batches
-output_dir = "../../data/processed"
-save_batches(batches, output_dir)
-print("Data processing complete!")
+clean_split_save()
