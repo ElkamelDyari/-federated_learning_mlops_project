@@ -3,8 +3,8 @@
 
 # external requirements
 
-pandas~=2.2.2
-numpy~=1.26.4
-scikit-learn~=1.5.1
-setuptools~=75.1.0
-mlflow~=2.18.0
+pandas==2.2.2
+numpy==1.26.4
+scikit-learn==1.5.1
+setuptools==75.1.0
+mlflow==2.18.0

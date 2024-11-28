@@ -11,30 +11,10 @@ from src.utilis.evaluate import evaluate_model
 from src.data.feature_engineering import preprocess_data
 import mlflow.sklearn
 import mlflow.xgboost
+import json
 
 mlflow.set_tracking_uri("https://dagshub.com/ElkamelDyari/-federated_learning_mlops_project.mlflow")
 dagshub.init(repo_owner='ElkamelDyari', repo_name='-federated_learning_mlops_project', mlflow=True)
-
-# Set up your parameter grids
-param_grids = {
-    "SVM": {"kernel": ["linear", "rbf"],
-            "C": [0.1, 1],
-            'probability': [True]},
-    "KNN": {"n_neighbors": [3, 5, 7], "weights": ["uniform", "distance"]},
-    "DecisionTree": {"criterion": ["gini", "entropy"],
-                     "max_depth": [5, 8, 10, 20, None]},
-    "RandomForest": {"n_estimators": [10, 20, 30],
-                     "max_depth": [5, 8, 10, 15]},
-    "LogisticRegression": {'max_iter': [100, 500, 1000, 5000, 10000],
-                           "C": [0.1, 1, 10],
-                           'solver': ['saga', 'liblinear', 'lbfgs', 'newton-cg']},
-    "XGBoost": {'n_estimators': [10, 20, 50],
-                'max_depth': [3, 5, 10],
-                'learning_rate': [0.01, 0.1],
-                'subsample': [0.6, 1.0],
-                'colsample_bytree': [0.6, 1.0]},
-}
-file_path = "../../data/processed/data1.csv"
 
 
 def grid_Search(path, grid_params, experiment_name):
@@ -83,4 +63,43 @@ def grid_Search(path, grid_params, experiment_name):
                     mlflow.sklearn.log_model(model, "model")
 
 
-grid_Search(file_path, param_grids, "Grid_Search")
+def main():
+    # Set up your parameter grids
+    # param_grids = {
+    #    "SVM": {"kernel": ["linear", "rbf"],
+    #            "C": [0.1, 1],
+    #            'probability': [True]},
+    #    "KNN": {"n_neighbors": [3, 5, 7], "weights": ["uniform", "distance"]},
+    #    "DecisionTree": {"criterion": ["gini", "entropy"],
+    #                     "max_depth": [5, 8, 10, 20, None]},
+    #    "RandomForest": {"n_estimators": [10, 20, 30],
+    #                     "max_depth": [5, 8, 10, 15]},
+    #    "LogisticRegression": {'max_iter': [100, 500, 1000, 5000, 10000],
+    #                           "C": [0.1, 1, 10],
+    #                           'solver': ['saga', 'liblinear', 'lbfgs', 'newton-cg']},
+    #    "XGBoost": {'n_estimators': [10, 20, 50],
+    #                'max_depth': [3, 5, 10],
+    #                'learning_rate': [0.01, 0.1],
+    #                'subsample': [0.6, 1.0],
+    #                'colsample_bytree': [0.6, 1.0]},
+    # }
+
+    # Set up your parameter grids
+    param_grids = {
+        "XGBoost": {'n_estimators': [50],
+                    'max_depth': [10],
+                    'learning_rate': [0.01],
+                    'subsample': [0.6],
+                    'colsample_bytree': [1.0]},
+    }
+
+    file_path = "data/processed/data1.csv"
+
+    try:
+        grid_Search(file_path, param_grids, "Grid_Search")
+    except Exception as e:
+        raise Exception(f"An error occurred :{e}")
+
+
+if __name__ == "__main__":
+    main()

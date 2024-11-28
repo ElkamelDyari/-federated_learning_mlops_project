@@ -1,3 +1,5 @@
+from sklearn.metrics import confusion_matrix
+
 from src.utilis.evaluate import evaluate_client
 
 

@@ -46,7 +46,7 @@ def get_best_model_params(experiment_name, metric="accuracy"):
         except (SyntaxError, NameError):
             params[key] = value  # Keep as string if eval fails
 
-    return {"model_name": model_name, "params": params}
+    return {"model_name": model_name, "params": params, "run_id": best_run.info.run_id}
 
 
 def initialize_model(model_name, params):

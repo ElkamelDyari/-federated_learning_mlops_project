@@ -33,3 +33,19 @@ def preprocess_data(file_path, n_components=35, batch_size=500, test_size=0.3, r
     y_new = new_data['Target']
 
     return train_test_split(X_new, y_new, test_size=test_size, random_state=random_state)
+
+def process_pred(X, n_components=35, batch_size=500):
+    # Standardize features
+    scaler = StandardScaler()
+    scaled_features = scaler.fit_transform(X)
+
+    # Incremental PCA
+    ipca = IncrementalPCA(n_components=n_components, batch_size=batch_size)
+    for batch in np.array_split(scaled_features, len(X) // batch_size):
+        ipca.partial_fit(batch)
+
+    transformed_features = ipca.transform(scaled_features)
+    new_data = pd.DataFrame(transformed_features, columns=[f'PC{i + 1}' for i in range(n_components)])
+
+    return new_data
+

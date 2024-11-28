@@ -1,6 +1,8 @@
-from sklearn.metrics import accuracy_score, f1_score, fbeta_score, precision_score, recall_score, roc_auc_score, precision_recall_curve, auc
-
-
+from matplotlib import pyplot as plt
+from sklearn.metrics import accuracy_score, f1_score, fbeta_score, precision_score, recall_score, roc_auc_score, \
+    precision_recall_curve, auc, confusion_matrix
+import seaborn as sns
+import mlflow
 def evaluate_client(model, X, y, data_type="Test", client_id=0):
     """
     Evaluate the model on the given dataset.
