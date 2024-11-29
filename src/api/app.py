@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
 import pandas as pd
 from pydantic import BaseModel
 from typing import List
@@ -73,8 +74,8 @@ except HTTPException as e:
     print(e.detail)
 
 @app.get("/")
-def read_root():
-    return {"message": "Welcome to the Federated Learning API"}
+async def serve_homepage():
+    return FileResponse("src/static/index.html")
 
 # API route for making predictions
 @app.post("/predict", response_model=PredictionOutput)

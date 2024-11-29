@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Interface</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .attack {
+            background-color: #ffcccc;  /* Red background for attack */
+            color: #cc0000;  /* Dark red text for attack */
+            border: 1px solid #cc0000;
+        }
+        .safe {
+            background-color: #d4edda;  /* Green background for safe */
+            color: #155724;  /* Dark green text for safe */
+            border: 1px solid #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>IDS</h1>
+        <p>Enter the feature values separated by commas:</p>
+        <input type="text" id="features" placeholder="e.g., 1.0, 2.3, 3.1, 4.7">
+        <button onclick="makePrediction()">Submit</button>
+        <div class="output" id="output"></div>
+    </div>
+
+    <script>
+        async function makePrediction() {
+            const featureInput = document.getElementById("features").value;
+            
+            // Ensure that the input is properly split and converted to numbers
+            const features = featureInput.split(',').map(value => parseFloat(value.trim()));
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ features })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const outputElement = document.getElementById("output");
+
+                // Check the prediction value and apply appropriate styling
+                if (data.prediction === 0) {
+                    outputElement.textContent = "No Attack Detected";
+                    outputElement.className = "output safe";  // Apply 'safe' class for no attack
+                } else if (data.prediction === 1) {
+                    outputElement.textContent = "Attack Detected!";
+                    outputElement.className = "output attack";  // Apply 'attack' class for attack
+                } else {
+                    outputElement.textContent = "Unknown Response";
+                    outputElement.className = "output";  // Default styling if no prediction result
+                }
+            } catch (error) {
+                document.getElementById("output").textContent = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

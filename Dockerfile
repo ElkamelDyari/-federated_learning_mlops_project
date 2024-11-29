@@ -1,6 +1,9 @@
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9
 
-COPY ./src /app
+# Set the working directory inside the container
+WORKDIR /app 
+
+COPY . /app
 
 RUN pip install -r /app/requirements.txt
 
