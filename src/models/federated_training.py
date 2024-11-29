@@ -49,25 +49,23 @@ def federated_train(
         # Log the final global model to MLflow within the current experiment
         print("Saving final global model to current experiment...")
         logged_model_uri = mlflow.xgboost.log_model(global_model, artifact_path="federated_global_model")
-        print(f"Model logged to: {logged_model_uri}")
+        print(f"logged model uri = {logged_model_uri} ")
+        print(f"logged model run_id {logged_model_uri.model_uri}")
 
-    # Register the final model in the Model Registry
-    MODEL_NAME = "FederatedGlobalModel"
-    print(f"Registering final model to the Model Registry with name: {MODEL_NAME}...")
     client = MlflowClient()
-    try:
-        registered_model = client.create_registered_model(MODEL_NAME)
-        print(f"Created a new registered model: {MODEL_NAME}")
-    except mlflow.exceptions.MlflowException:
-        print(f"Model {MODEL_NAME} already exists in the registry.")
 
-    # Register the model version
-    model_version = client.create_model_version(
+    MODEL_NAME = "Final_FL"
+    print(f"Registering final model to the Model Registry with name: {MODEL_NAME}...")
+
+    reg = mlflow.register_model(model_uri=logged_model_uri.model_uri, name=MODEL_NAME)
+    model_version = reg.version
+    new_stage = "Production"
+    client.transition_model_version_stage(
         name=MODEL_NAME,
-        source=logged_model_uri.model_uri,
-        run_id=run.info.run_id
+        version=model_version,
+        stage=new_stage,
+        archive_existing_versions=True
     )
-    print(f"Registered model version: {model_version.version}")
     print(f"Model {MODEL_NAME} registered successfully in the Model Registry.")
 
 

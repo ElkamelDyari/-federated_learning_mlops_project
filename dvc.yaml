@@ -1,0 +1,12 @@
+stages:
+  grid_search:
+    cmd: python src/models/gridsearch.py
+    deps:
+    - data/processed/data1.csv
+    - src/models/gridsearch.py
+
+  federated_training:
+    cmd: python src/models/federated_training.py
+    deps:
+    - src/models/federated_training.py
+

@@ -1,0 +1,20 @@
+schema: '2.0'
+stages:
+  grid_search:
+    cmd: python src/models/gridsearch.py
+    deps:
+    - path: data/processed/data1.csv
+      hash: md5
+      md5: 405512d4888d32363f2723eb43af9ea3
+      size: 30694746
+    - path: src/models/gridsearch.py
+      hash: md5
+      md5: f9b4a0bb6706bfaad1242061bd18ccf1
+      size: 4275
+  federated_training:
+    cmd: python src/models/federated_training.py
+    deps:
+    - path: src/models/federated_training.py
+      hash: md5
+      md5: d8825889765060ba5782eb4ff047d7e8
+      size: 3578

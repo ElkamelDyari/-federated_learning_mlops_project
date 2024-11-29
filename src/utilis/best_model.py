@@ -7,7 +7,7 @@ from sklearn.tree import DecisionTreeClassifier
 from xgboost import XGBClassifier
 
 
-def get_best_model_params(experiment_name, metric="accuracy"):
+def get_best_model_params(experiment_name, metric="f1_score"):
     """
     Retrieve the hyperparameters of the best model from an MLflow experiment.
 
